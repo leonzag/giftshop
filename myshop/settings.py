@@ -65,6 +65,9 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "shop.context_processors.categories",
             ],
+            "libraries": {
+                "filters": "filters.filters",
+            },
         },
     },
 ]
@@ -127,3 +130,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Media files (user-uploaded files)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media/"
+
+# Session settings
+CART_SESSION_ID = "cart"
