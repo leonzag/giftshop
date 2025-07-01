@@ -1,3 +1,44 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
-# Create your views here.
+from cart.cart import Cart
+from shop.models import Product
+
+from .forms import OrderCreateForm
+from .models import Order, OrderItem
+
+
+def order_create(request):
+    cart = Cart(request)  # Получаем текущую корзину пользователя
+    form = OrderCreateForm()  # Пустая форма для GET-запроса
+
+    if request.method == "POST":
+        form = OrderCreateForm(request.POST)
+        if not form.is_valid():
+            return render(request, "orders/order/create.html", {"cart": cart, "form": form})
+
+        cd = form.cleaned_data
+        order = Order.objects.create(
+            first_name=cd["first_name"],
+            last_name=cd["last_name"],
+            email=cd["email"],
+            address=cd["address"],
+            postal_code=cd["postal_code"],
+            city=cd["city"],
+        )
+
+        for it in cart:
+            OrderItem.objects.create(order=order, product=it["product"], price=it["price"], quantity=it["quantity"])
+
+        cart.clear()  # Очищаем корзину после создания заказа
+
+        return render(
+            request,
+            "orders/order/created.html",  # Перенаправляем на страницу подтверждения
+            {"order": order},
+        )
+
+    return render(
+        request,
+        "orders/order/create.html",  # Отображаем форму создания заказа
+        {"cart": cart, "form": form},
+    )
