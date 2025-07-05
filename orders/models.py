@@ -4,6 +4,7 @@ from shop.models import Product
 
 
 class Order(models.Model):
+    id = models.BigAutoField(primary_key=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField()
@@ -37,6 +38,7 @@ class OrderItem(models.Model):
         quantity: колчество товаров
     """
 
+    id = models.BigAutoField(primary_key=True)
     order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, related_name="order_items", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
