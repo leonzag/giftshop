@@ -141,3 +141,19 @@ MEDIA_ROOT = BASE_DIR / "media/"
 
 # Session settings
 CART_SESSION_ID = "cart"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Celery
+rmq_user = os.environ.get("RABBITMQ_USER")
+rmq_pwd = os.environ.get("RABBITMQ_PASSWORD")
+
+CELERY_BROKER_URL = f"amqp://{rmq_user}:{rmq_pwd}@rabbitmq:5672/"  # URL брокера сообщений (RabbitMQ)
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"  # Где Celery будет хранить результаты задач. /0 - это номер БД Redis
+CELERY_ACCEPT_CONTENT = ["json"]  # Какие типы контента Celery должен принимать
+CELERY_TASK_SERIALIZER = "json"  # Как задачи будут сериализоваться
+CELERY_RESULT_SERIALIZER = "json"  # Как результаты будут сериализоваться
+CELERY_TIMEZONE = "Europe/Moscow"
+
+CELERY_TASK_ALWAYS_EAGER = False  # Важно для продакшена (True - для тестирования задач синхронно)
+CELERY_TASK_EAGER_PROPAGATES_EXCEPTIONS = False  # Аналогично
