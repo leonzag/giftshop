@@ -1,0 +1,103 @@
+services:
+  db:
+    image: postgres:17
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine # Образ с интерфейсом управления
+    hostname: rabbitmq
+    ports:
+      - "5672:5672" # AMQP порт
+      - "15672:15672" # Management UI порт (можно зайти по http://localhost:15672)
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # TODO: заменить latest на stable версию
+  redis:
+    image: redis:latest
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Сервис Django-приложения (веб-сервер)
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000 # Команда запуска Django
+    restart: on-failure:3
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Сервис для Celery Worker
+  celery_worker:
+    build: .
+    command: celery -A myshop worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - ./.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Сервис для Flower (мониторинг Celery)
+  flower:
+    build: .
+    command: celery -A myshop flower --port=5555
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555" # Порт для доступа к Flower UI
+    env_file:
+      - ./.env
+    depends_on:
+      celery_worker:
+        condition: service_started # Flower может запуститься как только worker начал работать
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  pg_data:
+  rabbitmq_data:
+  redis_data:
