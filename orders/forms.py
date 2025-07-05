@@ -25,3 +25,7 @@ class OrderCreateForm(forms.Form):
         max_length=100,
         widget=forms.TextInput(attrs={"class": CLASS_ATTR}),
     )
+    phone_number = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={"class": CLASS_ATTR}),
+    )
