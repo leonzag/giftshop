@@ -5,6 +5,7 @@ from shop.models import Product
 
 from .forms import OrderCreateForm
 from .models import Order, OrderItem
+from .tasks import order_created
 
 
 def order_create(request):
@@ -30,6 +31,8 @@ def order_create(request):
             OrderItem.objects.create(order=order, product=it["product"], price=it["price"], quantity=it["quantity"])
 
         cart.clear()  # Очищаем корзину после создания заказа
+
+        order_created.delay(order.id)
 
         return render(
             request,
