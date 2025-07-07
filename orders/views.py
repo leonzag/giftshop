@@ -18,7 +18,7 @@ def order_create(request):
             return render(request, "orders/order/create.html", {"cart": cart, "form": form})
 
         cd = form.cleaned_data
-        order = Order.objects.create(
+        fields = dict(
             first_name=cd["first_name"],
             last_name=cd["last_name"],
             email=cd["email"],
@@ -26,6 +26,11 @@ def order_create(request):
             postal_code=cd["postal_code"],
             city=cd["city"],
         )
+        if cart.coupon is not None:
+            fields["coupon"] = cart.coupon
+            fields["discount"] = cart.coupon.discount
+
+        order = Order.objects.create(**fields)
 
         for it in cart:
             OrderItem.objects.create(order=order, product=it["product"], price=it["price"], quantity=it["quantity"])

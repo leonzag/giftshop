@@ -40,9 +40,21 @@
                                 </td>
                             </tr>
                         {% endfor %}
+
+                        {% if cart.coupon %}
+                            <tr class="bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" colspan="2">
+                                    Купон: {{ cart.coupon.code }} ({{ cart.coupon.discount }}% скидка)
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-base font-medium text-red-600">
+                                    -${{ cart.get_discount|floatformat:"2" }}
+                                </td>
+                            </tr>
+                        {% endif %}
+
                         <tr class="bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900" colspan="2">Total:</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900">${{ cart.get_total_price }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900">${{ cart.get_total_price|floatformat:"2" }}</td>
                         </tr>
                     </tbody>
                 </table>
