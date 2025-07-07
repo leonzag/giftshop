@@ -25,6 +25,9 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             <a href="{{ item.product.get_absolute_url }}" class="text-blue-600 hover:text-blue-800">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="h-10 w-10 object-cover rounded-full inline-block mr-2">
+                                {% endif %}
                                 {{ item.product.name }}
                             </a>
                         </td>
