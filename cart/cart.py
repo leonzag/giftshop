@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.conf import settings
 
+from coupons.models import Coupon
 from shop.models import Product
 
 
@@ -15,6 +16,7 @@ class Cart:
             cart = self.session[self.session_id] = {}
 
         self.cart = cart
+        self.coupon_id = self.session.get("coupon_id")
 
     def save(self):
         # Пометить сессию как "измененную", чтобы убедиться, что она сохранена
@@ -70,9 +72,9 @@ class Cart:
 
     def get_total_price(self):
         """
-        Подсчитать общую стоимость товаров в корзине.
+        Подсчитать общую стоимость товаров в корзине с учётом скидок.
         """
-        return sum(Decimal(item["price"]) * item["quantity"] for item in self.cart.values())
+        return self.get_total_price_without_discount() - self.get_discount()
 
     def clear(self):
         """
@@ -80,3 +82,27 @@ class Cart:
         """
         del self.session[settings.CART_SESSION_ID]
         self.save()
+
+    @property
+    def coupon(self) -> Coupon | None:
+        """
+        Купон, если он был добавлен
+        """
+        if not self.coupon_id:
+            return None
+        try:
+            return Coupon.objects.get(id=self.coupon_id)
+        except Coupon.DoesNotExist:
+            pass
+        return None
+
+    def get_discount(self) -> Decimal:
+        if self.coupon:
+            return (self.coupon.discount / Decimal(100)) * self.get_total_price_without_discount()
+        return Decimal(0)
+
+    def get_total_price_without_discount(self):
+        """
+        Подсчитать общую стоимость товаров в корзине без учёта скидок.
+        """
+        return sum(Decimal(item["price"]) * item["quantity"] for item in self.cart.values())

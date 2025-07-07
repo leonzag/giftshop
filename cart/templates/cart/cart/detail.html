@@ -53,12 +53,57 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ item.total_price }}</td>
                     </tr>
                 {% endfor %}
+
+                {% if cart.coupon %}
+                    <tr class="bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" colspan="4">Промежуточная сумма:</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900">${{ cart.get_total_price_without_discount|floatformat:"2" }}</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" colspan="4">
+                            "{{ cart.coupon.code }}" купон ({{ cart.coupon.discount }}% скидка)
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-base font-medium text-red-600">
+                            -${{ cart.get_discount|floatformat:"2" }}
+                        </td>
+                    </tr>
+                {% endif %}
+
                 <tr class="bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900" colspan="4">Total:</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900">${{ cart.get_total_price }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900">${{ cart.get_total_price|floatformat:"2" }}</td>
                 </tr>
             </tbody>
         </table>
+
+        <div class="mt-6 p-4 border border-gray-200 rounded-md bg-gray-50">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Применить купон</h3>
+            <form action="{% url "coupons:apply" %}" method="post" class="flex items-end space-x-4">
+                {% for field in coupon_apply_form %}
+                    <div class="flex flex-grow rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-indigo-600">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+                        {{ field | add_class:"mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" }}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Применить
+                </button>
+                {% csrf_token %}
+            </form>
+            {# Если есть общие ошибки формы (например, неверный код купона) #}
+            {% if coupon_apply_form.non_field_errors %}
+                <div class="mt-2 text-sm text-red-600">
+                    {% for error in coupon_apply_form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
 
     <div class="flex justify-end space-x-4">
