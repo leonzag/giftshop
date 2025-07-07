@@ -25,6 +25,7 @@ def order_create(request):
             address=cd["address"],
             postal_code=cd["postal_code"],
             city=cd["city"],
+            phone_number=cd["phone_number"],
         )
         if cart.coupon is not None:
             fields["coupon"] = cart.coupon
