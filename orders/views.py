@@ -1,7 +1,7 @@
-from django.shortcuts import redirect, render
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import get_object_or_404, render
 
 from cart.cart import Cart
-from shop.models import Product
 
 from .forms import OrderCreateForm
 from .models import Order, OrderItem
@@ -50,4 +50,14 @@ def order_create(request):
         request,
         "orders/order/create.html",  # Отображаем форму создания заказа
         {"cart": cart, "form": form},
+    )
+
+
+@staff_member_required
+def admin_order_detail(request, id):
+    order = get_object_or_404(Order, id=id)
+    return render(
+        request,
+        "admin/orders/order/detail.html",
+        {"order": order},
     )
