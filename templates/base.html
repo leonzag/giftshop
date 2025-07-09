@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-white">
 
 <head>
     <meta charset="UTF-8">
@@ -13,8 +13,8 @@
 
     {% include "header.html" %}
 
-    <main class="container flex-grow mx-auto my-8 px-4">
-        {% block main %}
+    {% block main %}
+        <main class="h-full container flex-grow mx-auto my-8 px-4">
             <div class="flex flex-col md:flex-row gap-8">
 
                 {% block sidebar %}
@@ -26,8 +26,8 @@
                 </div>
 
             </div>
-        {% endblock %}
-    </main>
+        </main>
+    {% endblock %}
 
     {% include "footer.html" %}
 
