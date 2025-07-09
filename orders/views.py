@@ -1,4 +1,5 @@
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 
 from cart.cart import Cart
@@ -63,4 +64,27 @@ def admin_order_detail(request, order_id):
         request,
         "admin/orders/order/detail.html",
         {"order": order},
+    )
+
+
+@login_required
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(
+        request,
+        "orders/order/detail.html",
+        {"order": order}
+    )
+
+
+@login_required
+def order_history(request):
+    """
+    Заказы текщего аутентифицированного пользователя
+    """
+    orders = request.user.orders.all()
+    return render(
+        request,
+        "orders/order/history.html",
+        {"orders": orders}
     )
