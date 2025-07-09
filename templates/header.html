@@ -17,12 +17,8 @@
             <a href="#" class="text-gray-300 hover:text-cyan-600 transition duration-300">Контакты</a>
         </nav>
 
-        <div class="relative">
-            <label for="search-input" class="sr-only">Поиск по сайту</label>
-            <input type="text" id="search-input" placeholder="Поиск..."
-                class="pl-10 pr-4 py-2 border border-zinc-600 text-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1 text-zinc-300"
-                aria-hidden="true"></i>
+        {# include "searchbar.html" #}
+
         </div>
 
         <a href="{% url 'cart:cart_detail' %}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition">
