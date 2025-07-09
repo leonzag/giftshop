@@ -31,6 +31,9 @@ def order_create(request):
             fields["coupon"] = cart.coupon
             fields["discount"] = cart.coupon.discount
 
+        if request.user.is_authenticated:
+            fields["user"] = request.user
+
         order = Order.objects.create(**fields)
 
         for it in cart:
