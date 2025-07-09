@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "cart.apps.CartConfig",
     "orders.apps.OrdersConfig",
     "coupons.apps.CouponsConfig",
+    "account.apps.AccountConfig",
 ]
 
 MIDDLEWARE = [
@@ -158,3 +159,8 @@ CELERY_TIMEZONE = "Europe/Moscow"
 
 CELERY_TASK_ALWAYS_EAGER = False  # Важно для продакшена (True - для тестирования задач синхронно)
 CELERY_TASK_EAGER_PROPAGATES_EXCEPTIONS = False  # Аналогично
+
+# Account
+LOGIN_REDIRECT_URL = "/"  # Переход на главную страницу после успешного входа
+LOGIN_URL = "/account/login/"  # Куда перенаправляется пользователь для входа (не авторизован и пытается получить доступ к защищенной странице)
+LOGOUT_REDIRECT_URL = "/"  # Переход пользователя после выхода
