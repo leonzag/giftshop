@@ -17,11 +17,11 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remove</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Товар</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Количество</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Удалить</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Цена, шт.</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Цена итого</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -40,7 +40,7 @@
                                 {{ item.update_quantity_form.quantity | add_class:"mt-1 block w-20 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" }}
                                 {{ item.update_quantity_form.override }}
                                 <button type="submit" class="px-3 py-1 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Update
+                                    Обновить
                                 </button>
                                 {% csrf_token %}
                             </form>
@@ -48,34 +48,34 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <form action="{% url "cart:cart_remove" item.product.id %}" method="post">
                                 <button type="submit" class="px-3 py-1 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    Remove
+                                    Удалить
                                 </button>
                                 {% csrf_token %}
                             </form>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ item.price }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ item.total_price }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.price }} ₽</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.total_price }} ₽</td>
                     </tr>
                 {% endfor %}
 
                 {% if cart.coupon %}
                     <tr class="bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" colspan="4">Промежуточная сумма:</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900">${{ cart.get_total_price_without_discount|floatformat:"2" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900">{{ cart.get_total_price_without_discount|floatformat:"2" }} ₽</td>
                     </tr>
                     <tr class="bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" colspan="4">
                             "{{ cart.coupon.code }}" купон ({{ cart.coupon.discount }}% скидка)
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-base font-medium text-red-600">
-                            -${{ cart.get_discount|floatformat:"2" }}
+                            - {{ cart.get_discount|floatformat:"2" }} ₽
                         </td>
                     </tr>
                 {% endif %}
 
                 <tr class="bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900" colspan="4">Total:</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900">${{ cart.get_total_price|floatformat:"2" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900" colspan="4">Итого:</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900">{{ cart.get_total_price|floatformat:"2" }} ₽</td>
                 </tr>
             </tbody>
         </table>
@@ -112,9 +112,8 @@
 
     <div class="flex justify-end space-x-4">
         <a href="{% url "shop:product_list" %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Continue shopping
+            Продолжить покупки
         </a>
-        {# Здесь будет ссылка на оформление заказа, когда мы его реализуем #}
-        <a href="{% url 'orders:order_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Checkout</a>
+        <a href="{% url 'orders:order_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Оформить</a>
     </div>
 {% endblock %}
