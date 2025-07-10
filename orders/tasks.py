@@ -2,8 +2,7 @@ from celery import shared_task
 from django.core.mail import send_mail
 
 from .models import Order
-
-ADMIN_SHOP_EMAIL = "admin@myshop.com"
+from .settings import ADMIN_EMAIL
 
 
 @shared_task
@@ -19,6 +18,6 @@ def order_created(order_id):
         f"Вы успешно оформили заказ в нашем магазине.\n"
         f"Номер вашего заказа: {order.id}."
     )
-    mail_sent = send_mail(subject, message, "admin@myshop.com", [order.email])
+    mail_sent = send_mail(subject, message, ADMIN_EMAIL, [order.email])
 
     return mail_sent

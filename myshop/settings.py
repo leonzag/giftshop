@@ -146,6 +146,8 @@ MEDIA_ROOT = BASE_DIR / "media/"
 CART_SESSION_ID = "cart"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+ADMIN_EMAIL_ADDRESS = "admin@myshop.com"
+CONTACT_EMAIL_ADDRESS = "leonzag@yandex.ru"
 
 # Celery
 rmq_user = os.environ.get("RABBITMQ_USER")
