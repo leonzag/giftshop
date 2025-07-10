@@ -34,9 +34,8 @@ services:
       timeout: 5s
       retries: 5
 
-  # TODO: заменить latest на stable версию
   redis:
-    image: redis:latest
+    image: redis:8-alpine
     hostname: redis
     ports:
       - "6379:6379"
