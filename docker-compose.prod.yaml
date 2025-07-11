@@ -18,7 +18,7 @@ services:
       retries: 5
     restart: always
     networks:
-      - myshop_internal
+      - giftshop_internal
 
   rabbitmq:
     image: rabbitmq:4-management-alpine
@@ -38,7 +38,7 @@ services:
       retries: 5
     restart: always
     networks:
-      - myshop_internal
+      - giftshop_internal
 
   redis:
     image: redis:8-alpine
@@ -54,13 +54,13 @@ services:
       retries: 5
     restart: always
     networks:
-      - myshop_internal
+      - giftshop_internal
 
   web:
     build:
       context: ./app
       dockerfile: ./Dockerfile.prod
-    command: gunicorn --bind 0.0.0.0:8000 myshop.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 core.wsgi:application
     volumes:
       - static_data:/app/static
       - media_data:/app/media
@@ -75,13 +75,13 @@ services:
         condition: service_healthy
     restart: always
     networks:
-      - myshop_internal
+      - giftshop_internal
 
   celery_worker:
     build:
       context: ./app
       dockerfile: ./Dockerfile.prod
-    command: celery -A myshop worker -l info
+    command: celery -A core worker -l info
     env_file:
       - .env
     depends_on:
@@ -90,13 +90,13 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - myshop_internal
+      - giftshop_internal
 
   flower:
     build:
       context: ./app
       dockerfile: ./Dockerfile.prod
-    command: celery -A myshop flower --port=5555
+    command: celery -A core flower --port=5555
     env_file:
       - .env
     expose:
@@ -107,7 +107,7 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - myshop_internal
+      - giftshop_internal
 
   angie:
     image: docker.angie.software/angie:latest
@@ -124,8 +124,8 @@ services:
       - web
     stop_grace_period: 1s
     networks:
-      - myshop_internal
-      - myshop_external
+      - giftshop_internal
+      - giftshop_external
 
 volumes:
   pg_data:
@@ -135,9 +135,9 @@ volumes:
   media_data:
 
 networks:
-  myshop_internal:
-    name: myshop_internal
+  giftshop_internal:
+    name: giftshop_internal
     driver: bridge
-  myshop_external:
-    name: myshop_external
+  giftshop_external:
+    name: giftshop_external
     driver: bridge

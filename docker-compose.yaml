@@ -49,11 +49,13 @@ services:
 
   # Сервис Django-приложения (веб-сервер)
   web:
-    build: .
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile
     command: python manage.py runserver 0.0.0.0:8000 # Команда запуска Django
     restart: on-failure:3
     volumes:
-      - .:/app
+      - ./app:/app
     ports:
       - "8000:8000"
     env_file:
@@ -68,10 +70,12 @@ services:
 
   # Сервис для Celery Worker
   celery_worker:
-    build: .
-    command: celery -A myshop worker -l info
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile
+    command: celery -A core worker -l info
     volumes:
-      - .:/app
+      - ./app:/app
     env_file:
       - ./.env
     depends_on:
@@ -82,10 +86,12 @@ services:
 
   # Сервис для Flower (мониторинг Celery)
   flower:
-    build: .
-    command: celery -A myshop flower --port=5555
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile
+    command: celery -A core flower --port=5555
     volumes:
-      - .:/app
+      - ./app:/app
     ports:
       - "5555:5555" # Порт для доступа к Flower UI
     env_file:

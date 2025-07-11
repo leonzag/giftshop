@@ -2,9 +2,9 @@ import os
 
 from celery import Celery
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myshop.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
-app = Celery("myshop")
+app = Celery("core")
 
 # Загружаем конфигурацию Celery из настроек Django.
 # Все настройки Celery должны быть с префиксом 'CELERY_'.

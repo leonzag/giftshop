@@ -39,7 +39,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "myshop.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -61,7 +61,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "myshop.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 
 # Database
@@ -141,7 +141,7 @@ CACHES = {
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-ADMIN_EMAIL_ADDRESS = "admin@myshop.com"
+ADMIN_EMAIL_ADDRESS = "admin@giftshop.com"
 CONTACT_EMAIL_ADDRESS = "leonzag@yandex.ru"
 
 # Celery
