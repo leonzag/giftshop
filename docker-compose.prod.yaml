@@ -1,0 +1,143 @@
+services:
+  db:
+    image: postgres:17
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - myshop_internal
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    hostname: rabbitmq
+    expose:
+      - "5672" # AMQP порт
+      - "15672" # Management UI порт
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - myshop_internal
+
+  redis:
+    image: redis:8-alpine
+    hostname: redis
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - myshop_internal
+
+  web:
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile.prod
+    command: gunicorn --bind 0.0.0.0:8000 myshop.wsgi:application
+    volumes:
+      - static_data:/app/static
+      - media_data:/app/media
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    networks:
+      - myshop_internal
+
+  celery_worker:
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile.prod
+    command: celery -A myshop worker -l info
+    env_file:
+      - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - myshop_internal
+
+  flower:
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile.prod
+    command: celery -A myshop flower --port=5555
+    env_file:
+      - .env
+    expose:
+      - "5555" # Порт для доступа к Flower UI
+    depends_on:
+      celery_worker:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - myshop_internal
+
+  angie:
+    image: docker.angie.software/angie:latest
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+    volumes:
+      - ./angie/angie.conf:/etc/angie/angie.conf:ro
+      - ./angie/http.d/:/etc/angie/http.d:ro
+      - ./angie/logs:/var/log/angie
+      - static_data:/app/static
+      - media_data:/app/media
+    depends_on:
+      - web
+    stop_grace_period: 1s
+    networks:
+      - myshop_internal
+      - myshop_external
+
+volumes:
+  pg_data:
+  rabbitmq_data:
+  redis_data:
+  static_data:
+  media_data:
+
+networks:
+  myshop_internal:
+    name: myshop_internal
+    driver: bridge
+  myshop_external:
+    name: myshop_external
+    driver: bridge
