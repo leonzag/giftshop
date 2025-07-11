@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Добро пожаловать
+{% endblock %}
+
+{% block sidebar %}
+    {% include "sidebar.html" with categories=categories %}
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Добро пожаловать, {{ new_user.username }}!</h1>
+    <div class="max-w-md mx-auto bg-white shadow-md rounded-lg p-6 text-center">
+        <p class="text-gray-700 mb-4">
+            Ваш аккаунт был успешно создан.
+            Вы успешно вошли в систему.
+        </p>
+        <p class="text-gray-700">
+            Теперь вы можете <a href="{% url 'shop:product_list' %}" class="text-indigo-600 hover:text-indigo-800">перейти в магазин</a>.
+        </p>
+        <p class="mt-4">
+            <a href="{% url 'orders:order_history' %}" class="text-indigo-600 hover:text-indigo-800">Посмотреть мои заказы</a>
+        </p>
+    </div>
+{% endblock %}
