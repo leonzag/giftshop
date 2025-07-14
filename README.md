@@ -96,81 +96,21 @@ docker compose run web python manage.py createsuperuser
 
 ## Галерея
 
-<div class="carousel-container">
-    <div class="carousel-images">
-        <img class="carousel-image" src="assets/pages/image-1.png" alt="Image 1">
-        <img class="carousel-image" src="assets/pages/image-2.png" alt="Image 2">
-        <img class="carousel-image" src="assets/pages/image-3.png" alt="Image 3">
-        <img class="carousel-image" src="assets/pages/image-1.png" alt="Image 1">
-        <img class="carousel-image" src="assets/pages/image-2.png" alt="Image 2">
-        <img class="carousel-image" src="assets/pages/image-3.png" alt="Image 3">
-        </div>
-</div>
+![img-1](assets/pages/image-mob-1.png =32%x)
+![img-2](assets/pages/image-mob-2.png =33%x)
+![img-3](assets/pages/image-mob-3.png =33%x)
 
-<style>
-/* Базовые стили для контейнера карусели */
-.carousel-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px; /* Регулируйте по необходимости */
-    margin: 20px auto;
-    overflow: hidden; /* Скрывает выходящие за пределы изображения */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+![img-4](assets/pages/image-mob-4.png "/" =30%x)
+![img-5](assets/pages/image-5.png =69%x)
 
-/* Контейнер изображений, который будет прокручиваться */
-.carousel-images {
-    display: flex;
-    /* Убедитесь, что ширина контейнера больше, чем у одного изображения, чтобы анимация имела место */
-    width: fit-content; /* Позволяет содержимому определять ширину */
-    animation: autoScroll 15s linear infinite; /* 15s - длительность, infinite - бесконечно */
-}
-
-/* Изображения внутри карусели */
-.carousel-image {
-    width: 600px; /* Ширина одного изображения, должна совпадать с max-width контейнера */
-    height: auto; /* Сохраняет пропорции */
-    object-fit: cover;
-    border-radius: 8px;
-    flex-shrink: 0; /* Важно: предотвращает сжатие изображений */
-}
-
-/* Чтобы создать эффект бесконечной прокрутки, дублируем изображения.
-   Это не идеальное решение, но работает для CSS-only.
-   Например, если у вас 3 изображения, продублируйте их 1-2 раза.
-   image1.jpg, image2.jpg, image3.jpg, image1.jpg, image2.jpg
-*/
-.carousel-images img:nth-child(n) {
-    /* Можно добавить небольшие отступы, если нужно */
-    margin-right: 0px; /* Adjust as needed */
-}
-
-/* Анимация прокрутки */
-@keyframes autoScroll {
-    0% {
-        transform: translateX(0%);
-    }
-    100% {
-        /*
-           Расчет: (количество изображений - 1) * 100%
-           Если у вас 3 уникальных изображения, и вы их дублируете до 5 штук:
-           (5 изображений - 1) * 100% = 400%
-           Но для бесшовной цикличной прокрутки, особенно когда изображения дублируются,
-           нужно прокрутить ровно на ширину *уникальных* изображений.
-           Если у вас 3 уникальных изображения и вы продублировали их,
-           чтобы в сумме получилось 6 (img1, img2, img3, img1, img2, img3),
-           то прокрутка должна быть на ширину 3 изображений.
-           -300% означает прокрутку на ширину 3-х изображений влево.
-        */
-        transform: translateX(-300%); /* Пример для 3 уникальных изображений */
-    }
-}
-
-/* Опционально: пауза при наведении (работает, если элемент поддерживает :hover) */
-.carousel-container:hover .carousel-images {
-    animation-play-state: paused;
-}
-
-</style>
-
+---
+### Остальные изображения
+<details>
+    <summary>Раскрыть</summary>
+    <img src="assets/pages/image-1.png">
+    <img src="assets/pages/image-2.png">
+    <img src="assets/pages/image-3.png">
+    <img src="assets/pages/image-4.png">
+    <img src="assets/pages/image-5.png">
+    <img src="assets/pages/image-6.png">
+</details>
