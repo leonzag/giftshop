@@ -96,17 +96,15 @@ docker compose run web python manage.py createsuperuser
 
 ## Галерея
 
-![img-1](assets/pages/image-mob-1.png =32%x)
-![img-2](assets/pages/image-mob-2.png =33%x)
-![img-3](assets/pages/image-mob-3.png =33%x)
-
-![img-4](assets/pages/image-mob-4.png "/" =30%x)
-![img-5](assets/pages/image-5.png =69%x)
+![img-1](assets/pages/image-mob-1.png)
 
 ---
 ### Остальные изображения
 <details>
     <summary>Раскрыть</summary>
+    <img src="assets/pages/image-mob-2.png">
+    <img src="assets/pages/image-mob-3.png">
+    <img src="assets/pages/image-mob-4.png">
     <img src="assets/pages/image-1.png">
     <img src="assets/pages/image-2.png">
     <img src="assets/pages/image-3.png">
