@@ -16,13 +16,16 @@ services:
       interval: 3s
       timeout: 5s
       retries: 5
+    restart: always
+    networks:
+      - giftshop_internal
 
   rabbitmq:
-    image: rabbitmq:4-management-alpine # Образ с интерфейсом управления
+    image: rabbitmq:4-management-alpine
     hostname: rabbitmq
-    ports:
-      - "5672:5672" # AMQP порт
-      - "15672:15672" # Management UI порт (можно зайти по http://localhost:15672)
+    expose:
+      - "5672" # AMQP порт
+      - "15672" # Management UI порт
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     environment:
@@ -33,12 +36,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: always
+    networks:
+      - giftshop_internal
 
   redis:
     image: redis:8-alpine
     hostname: redis
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -46,20 +52,20 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: always
+    networks:
+      - giftshop_internal
 
-  # Сервис Django-приложения (веб-сервер)
   web:
     build:
       context: ./app
       dockerfile: ./Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000 # Команда запуска Django
-    restart: on-failure:3
+    command: gunicorn --bind 0.0.0.0:8000 core.wsgi:application
     volumes:
-      - ./app:/app
-    ports:
-      - "8000:8000"
+      - static_data:/app/staticfiles
+      - media_data:/app/media
     env_file:
-      - ./.env
+      - .env
     depends_on:
       db:
         condition: service_healthy
@@ -67,42 +73,76 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: always
+    networks:
+      - giftshop_internal
 
-  # Сервис для Celery Worker
   celery_worker:
     build:
       context: ./app
       dockerfile: ./Dockerfile
     command: celery -A core worker -l info
-    volumes:
-      - ./app:/app
     env_file:
-      - ./.env
+      - .env
     depends_on:
       rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
+    networks:
+      - giftshop_internal
 
-  # Сервис для Flower (мониторинг Celery)
   flower:
     build:
       context: ./app
       dockerfile: ./Dockerfile
     command: celery -A core flower --port=5555
-    volumes:
-      - ./app:/app
-    ports:
-      - "5555:5555" # Порт для доступа к Flower UI
     env_file:
-      - ./.env
+      - .env
+    expose:
+      - "5555" # Порт для доступа к Flower UI
     depends_on:
       celery_worker:
-        condition: service_started # Flower может запуститься как только worker начал работать
+        condition: service_started
       rabbitmq:
         condition: service_healthy
+    networks:
+      - giftshop_internal
+
+  angie:
+    image: docker.angie.software/angie:latest
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+    volumes:
+      - ./angie/angie.conf:/etc/angie/angie.conf:ro
+      - ./angie/http.d/:/etc/angie/http.d:ro
+      - ./angie/logs:/var/log/angie
+      - static_data:/app/staticfiles
+      - media_data:/app/media
+    depends_on:
+      - web
+    stop_grace_period: 1s
+    networks:
+      - giftshop_internal
+      - giftshop_external
 
 volumes:
   pg_data:
+    name: giftshop_pg_data
   rabbitmq_data:
+    name: giftshop_rabbitmq_data
   redis_data:
+    name: giftshop_redis_data
+  static_data:
+    name: giftshop_static_data
+  media_data:
+    name: giftshop_media_data
+
+networks:
+  giftshop_internal:
+    name: giftshop_internal
+    driver: bridge
+  giftshop_external:
+    name: giftshop_external
+    driver: bridge

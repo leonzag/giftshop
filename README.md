@@ -87,8 +87,11 @@
 По умолчанию **Angie** сконфигурирован на прослушивание `:80` порта **со всеми server_name's**.
 
 ```bash
-# Запуск проекта
-docker compose -f docker-compose.prod.yaml up -d
+# Запуск проекта (production)
+docker compose up -d
+
+# Для Dev:
+# docker compose -f docker-compose.dev.yaml up -d
 
 # Добавление Django Superuser: Admin-аккаунт
 docker compose run web python manage.py createsuperuser
