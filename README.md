@@ -6,11 +6,18 @@
 
 </div>
 
-## Описание
-
-### Интернет-магазин сувениров "GiftShop"
+## Интернет-магазин сувениров
 
 ### Технологии
+
+<div class="">
+<img src="./assets/django.svg" width="64">
+<img src="./assets/celery-512.svg" width="64">
+<img src="./assets/rabbitmq.svg" width="128">
+<img src="./assets/redis.svg" width="64">
+<img src="./assets/pg.svg" width="96">
+<img src="./assets/tailwind.svg" width="128">
+</div>
 
 1. **Django `v5` + Django Templates**: Multi-Page Application
 2. **Celery**: Распределенная асинхронная **очередь задач**
@@ -76,6 +83,13 @@
 - Управление пользовательскими профилями
 
 </details>
+
+---
+
+Для отправки сообщений обратной связи и письма пользователю об успешном размещении заказа использована распределенная асинхронная **очередь задач**
+**Celery** (backend для Celery: брокер сообщений **RabbitMQ** и *In-Memory Key-Value* база данных **Redis**).
+
+Администраторы могут отслеживать сообщения и задачи в **Celery-Flower**.
 
 ## Установка
 
